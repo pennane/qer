@@ -51,23 +51,21 @@ export type GlobalUser = {
   accessToken: string
 }
 
-export type User = Omit<
-  GlobalUser,
-  'displayName' | 'accessToken' | 'refreshToken'
-> & {
+export type QueueUser = Omit<GlobalUser, 'accessToken' | 'refreshToken'> & {
   queue: Track[]
   accumulatedPlaytime: number
+  joined: number
 }
 
 export type Queue = {
   userId: string
-  users: NonEmptyList<User>
+  users: NonEmptyList<QueueUser>
 }
 
-export type UserWithTracks = Omit<User, 'queue'> & {
+export type UserWithTracks = Omit<QueueUser, 'queue'> & {
   queue: NonEmptyList<Track>
 }
 
-export type RequestedTrack = Track & { userId: string }
+export type RequestedTrack = Track & { userId: string; userDisplayName: string }
 
 export type NonEmptyList<T> = [T, ...T[]]

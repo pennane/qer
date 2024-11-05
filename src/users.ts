@@ -1,4 +1,4 @@
-import { GlobalUser, User } from './models'
+import { GlobalUser, QueueUser } from './models'
 
 const userStore = new Map<string, GlobalUser>()
 export function addUser(user: GlobalUser) {
