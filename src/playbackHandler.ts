@@ -38,11 +38,13 @@ function createProcess(id: string) {
 
       const currentTrack = await fetchCurrentTrack(user.accessToken)
       if (!currentTrack) {
-        console.warn(`(${id}) Failed to fetch current track`)
+        console.log(
+          `(${id}) Failed to fetch current track (requested by ${nextTrack.userDisplayName})`
+        )
         return
       }
       if (!currentTrack.isPlaying) {
-        console.log(`(${id}) Current track is not playing`)
+        console.log(`(${id}) Nothing playing currently`)
         return
       }
 
@@ -53,19 +55,26 @@ function createProcess(id: string) {
 
       if (timeToNext > QUEUE_NEXT_TRESHOLD) {
         console.log(
-          `(${id}) Time to next track (${nextTrack.name}): ${timeToNext} ms`
+          `(${id}) Time to next track (${nextTrack.name}): ${timeToNext} ms (requested by ${nextTrack.userDisplayName})`
         )
         return
       }
 
-      console.log(`(${id}) Scheduling next track in ${timeToNext} ms`)
+      console.log(
+        `(${id}) Scheduling next track (${nextTrack.name}) in ${timeToNext} ms (requested by ${nextTrack.userDisplayName})`
+      )
       const timeout = setTimeout(async () => {
         try {
           popFirstUserTrack(queue.userId, nextTrack.userId)
           await playTrack(user.accessToken, nextTrack.uri)
-          console.log(`(${id}) Playing next track: ${nextTrack.name}`)
+          console.log(
+            `(${id}) Playing next track (${nextTrack.name}) (requested by ${nextTrack.userDisplayName})`
+          )
         } catch (error) {
-          console.error(`(${id}) Error playing track:`, error)
+          console.error(
+            `(${id}) Error playing track (${nextTrack.name}):`,
+            error
+          )
         } finally {
           timeoutStore.delete(id)
         }
