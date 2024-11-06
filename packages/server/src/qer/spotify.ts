@@ -1,23 +1,14 @@
 import { partition } from '../lib/fp'
 import { CurrentTrack, SpotifyTrack } from '../models'
-import { addUser } from '../stores'
-import { getTrack, addTrack } from '../tracks'
-
-import dotenv from 'dotenv'
-
-dotenv.config()
-
-const { SPOTIFY_CLIENT_ID, SPOTIFY_SECRET, SPOTIFY_REDIRECT_URI } = process.env
-
-if ([SPOTIFY_CLIENT_ID, SPOTIFY_SECRET, SPOTIFY_REDIRECT_URI].some((x) => !x))
-	throw new Error('Missing env variables')
+import { addTrack, addUser, getTrack } from '../stores'
+import config from '../lib/config'
 
 const SPOTIFY_API_URL = 'https://api.spotify.com/v1'
 const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token'
 const SPOTIFY_AUTHORIZE_URL = 'https://accounts.spotify.com/authorize'
 
 const AUTHORIZATION_HEADER = {
-	Authorization: `Basic ${Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_SECRET}`).toString('base64')}`,
+	Authorization: `Basic ${Buffer.from(`${config.SPOTIFY_CLIENT_ID}:${config.SPOTIFY_SECRET}`).toString('base64')}`,
 }
 
 const COMMON_HEADERS = {
@@ -29,8 +20,8 @@ export function createAuthURL(state: string): string {
 		'user-read-private user-read-email user-read-playback-state user-modify-playback-state user-read-currently-playing'
 	const params = new URLSearchParams({
 		response_type: 'code',
-		client_id: SPOTIFY_CLIENT_ID!,
-		redirect_uri: SPOTIFY_REDIRECT_URI!,
+		client_id: config.SPOTIFY_CLIENT_ID!,
+		redirect_uri: config.SPOTIFY_REDIRECT_URI!,
 		scope,
 		state,
 	})
@@ -53,7 +44,7 @@ export async function fetchToken(code: string) {
 	const body = new URLSearchParams({
 		grant_type: 'authorization_code',
 		code,
-		redirect_uri: SPOTIFY_REDIRECT_URI!,
+		redirect_uri: config.SPOTIFY_REDIRECT_URI!,
 	})
 	return fetchTokenOrRefresh(body)
 }
