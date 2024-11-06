@@ -34,7 +34,7 @@ async function performUserAuthorization(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (client as any).authenticationStrategy.getOrCreateAccessToken()
 
-  if (!isEmptyAccessToken(accessToken)) {
+  if (accessToken && !isEmptyAccessToken(accessToken)) {
     await fetch(onAuthorizationOrUrl, {
       method: 'POST',
       headers: {
