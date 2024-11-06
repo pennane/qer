@@ -19,6 +19,7 @@ const requiredVariables = [
 	'SPOTIFY_SECRET',
 	'SPOTIFY_REDIRECT_URI',
 	'CORS_CLIENT_URL',
+	'SESSION_SECRET',
 ] as const
 
 export default fromEntries(requiredVariables.map(requiredVariable))

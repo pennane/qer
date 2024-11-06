@@ -19,7 +19,7 @@ app.use(cors(corsOptions))
 app.use(express.json())
 app.use(
 	session({
-		secret: 'blaablaaihansama',
+		secret: config.SESSION_SECRET,
 		resave: false,
 		saveUninitialized: true,
 		cookie: { secure: false, maxAge: 60000 },
