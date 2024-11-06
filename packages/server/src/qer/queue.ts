@@ -98,14 +98,18 @@ export function setUserQueue(
 	return queue
 }
 
-export function popFirstUserTrack(queueId: string, userId: string): boolean {
+export function popFirstUserTrack(queueId: string, userId: string) {
 	const queue = queueStore.get(queueId)
 	if (!queue) return false
 
 	const userIndex = queue.users.findIndex((u) => u.id === userId)
 	if (userIndex === -1) return false
+	const targetUser = queue.users[userIndex]!
+	const toPop = targetUser.queue[0]
+	if (!toPop) return false
 
-	queue.users[userIndex]!.queue = queue.users[userIndex]!.queue.slice(1)
+	targetUser.queue = queue.users[userIndex]!.queue.slice(1)
+	targetUser.accumulatedPlaytime += toPop.duration_ms
 	return true
 }
 

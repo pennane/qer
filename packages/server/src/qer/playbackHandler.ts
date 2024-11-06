@@ -1,8 +1,6 @@
-import config from '../lib/config'
 import { buildTrackQueue, popFirstUserTrack, queueStore } from './queue'
-
-import { AccessToken, SpotifyApi } from '@spotify/web-api-ts-sdk'
 import { apiStore } from './spotify'
+import { NonEmptyList, QueueUser } from '../models'
 
 const INTERVAL_DURATION = 10000
 const QUEUE_NEXT_TRESHOLD = 10000
@@ -102,6 +100,13 @@ function createProcess(id: string) {
 }
 
 function cleanUpProcess(id: string) {
+	const queue = queueStore.get(id)
+	if (queue) {
+		queue.users = queue.users.map((user) => ({
+			...user,
+			accumulatedPlaytime: 0,
+		})) as NonEmptyList<QueueUser>
+	}
 	clearInterval(intervalStore.get(id))
 	clearTimeout(timeoutStore.get(id))
 	intervalStore.delete(id)
