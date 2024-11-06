@@ -16,8 +16,9 @@ const SPOTIFY_API_URL = 'https://api.spotify.com/v1'
 const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token'
 const SPOTIFY_AUTHORIZE_URL = 'https://accounts.spotify.com/authorize'
 
-const AUTHORIZATION_HEADER = (clientId: string, clientSecret: string) =>
-	`Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`
+const AUTHORIZATION_HEADER = {
+	Authorization: `Basic ${Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_SECRET}`).toString('base64')}`,
+}
 
 const COMMON_HEADERS = {
 	'Content-Type': 'application/x-www-form-urlencoded',
@@ -41,14 +42,11 @@ async function fetchTokenOrRefresh(body: URLSearchParams) {
 		method: 'POST',
 		headers: {
 			...COMMON_HEADERS,
-			Authorization: AUTHORIZATION_HEADER(
-				SPOTIFY_CLIENT_ID!,
-				SPOTIFY_SECRET!,
-			),
+			...AUTHORIZATION_HEADER,
 		},
 		body,
 	})
-	return await response.json()
+	return response.json()
 }
 
 export async function fetchToken(code: string) {
