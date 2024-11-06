@@ -1,9 +1,9 @@
 {
-  "name": "qer",
-  "version": "1.0.0",
-  "description": "",
-  "scripts": {},
-  "keywords": [],
-  "author": "Arttu Pennanen <arttuinthewoods@gmail.com>",
-  "license": "ISC"
+    "name": "qer",
+    "version": "1.0.0",
+    "description": "",
+    "scripts": {},
+    "keywords": [],
+    "author": "Arttu Pennanen <arttuinthewoods@gmail.com>",
+    "license": "ISC"
 }

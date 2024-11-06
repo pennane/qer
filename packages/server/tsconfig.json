@@ -1,16 +1,16 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "NodeNext",
-    "types": [],
-    "outDir": "./dist",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "noUncheckedIndexedAccess": true,
-    "skipLibCheck": true
-  },
-  "include": ["src/**/*"],
-  "files": ["src/models.ts"]
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "NodeNext",
+		"types": [],
+		"outDir": "./dist",
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"noImplicitAny": true,
+		"noUncheckedIndexedAccess": true,
+		"skipLibCheck": true
+	},
+	"include": ["src/**/*"],
+	"files": ["src/models.ts"]
 }
