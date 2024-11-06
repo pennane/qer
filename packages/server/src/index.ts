@@ -1,12 +1,21 @@
 import express from 'express'
 import session from 'express-session'
+import cors from 'cors'
 import { startPlaybackHandling } from './qer/playbackHandler'
 import { fetchUserProfile } from './qer/spotify'
 import { authRouter } from './routes/auth'
 import queueRouter from './routes/queue'
+import config from './lib/config'
 
 const app = express()
 
+const corsOptions = {
+	origin: config.CORS_CLIENT_URL,
+	credentials: true,
+	optionsSuccessStatus: 204,
+}
+
+app.use(cors(corsOptions))
 app.use(express.json())
 app.use(
 	session({
