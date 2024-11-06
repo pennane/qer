@@ -1,3 +1,4 @@
+import { SpotifyApi } from '@spotify/web-api-ts-sdk'
 import { isNotEmpty } from '../lib/fp'
 import {
 	Track,
@@ -7,7 +8,8 @@ import {
 	UserWithTracks,
 	Queue,
 } from '../models'
-import { getUser, queueStore } from '../stores'
+
+export const queueStore = new Map<string, Queue>()
 
 function hasTracksInQueue(x: QueueUser): x is UserWithTracks {
 	return isNotEmpty(x.queue)
@@ -33,7 +35,6 @@ function nextTrack(
 	const requestedTrack = {
 		...track,
 		userId: user.id,
-		userDisplayName: user.displayName,
 	}
 
 	if (!isNotEmpty(restTracks)) {
@@ -70,16 +71,13 @@ export function buildTrackQueue(users: QueueUser[]): RequestedTrack[] {
 	return queue
 }
 
-export const addUserToQueue = (queueUserId: string, userId: string) => {
+export function addUserToQueue(queueUserId: string, userId: string) {
 	const queue = queueStore.get(queueUserId)
-	const user = getUser(userId)
 	if (!queue) throw new Error('no queue')
-	if (!user) throw new Error('no user')
 	if (queue.users.some((user) => user.id === userId))
 		throw new Error('Already in said queue')
 	queue.users = queue.users.concat({
 		id: userId,
-		displayName: user.displayName,
 		accumulatedPlaytime: 0,
 		queue: [],
 		joined: Date.now(),
@@ -87,11 +85,11 @@ export const addUserToQueue = (queueUserId: string, userId: string) => {
 	return queue
 }
 
-export const setUserQueue = (
+export function setUserQueue(
 	queueUserId: string,
 	userId: string,
 	tracks: Track[],
-) => {
+) {
 	const queue = queueStore.get(queueUserId)
 	if (!queue) throw new Error('no queue')
 	queue.users = queue.users.map((u) =>
@@ -100,7 +98,7 @@ export const setUserQueue = (
 	return queue
 }
 
-export const popFirstUserTrack = (queueId: string, userId: string): boolean => {
+export function popFirstUserTrack(queueId: string, userId: string): boolean {
 	const queue = queueStore.get(queueId)
 	if (!queue) return false
 
@@ -109,4 +107,21 @@ export const popFirstUserTrack = (queueId: string, userId: string): boolean => {
 
 	queue.users[userIndex]!.queue = queue.users[userIndex]!.queue.slice(1)
 	return true
+}
+
+export async function createQueue(sdk: SpotifyApi): Promise<Queue> {
+	const profile = await sdk.currentUser.profile()
+	const queue: Queue = queueStore.get(profile.id) || {
+		userId: profile.id,
+		users: [
+			{
+				id: profile.id,
+				accumulatedPlaytime: 0,
+				queue: [],
+				joined: Date.now(),
+			},
+		],
+	}
+	queueStore.set(profile.id, queue)
+	return queue
 }

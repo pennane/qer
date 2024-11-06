@@ -1,18 +1,23 @@
 import { Router } from 'express'
-import { fetchTracks } from '../qer/spotify'
-import { setUserQueue, buildTrackQueue } from '../qer/queue'
-import { createQueue, getQueue } from '../stores'
+import {
+	setUserQueue,
+	buildTrackQueue,
+	createQueue,
+	queueStore,
+} from '../qer/queue'
+import { getSpotify } from '../qer/spotify'
 
 export const queueRouter = Router()
 
-queueRouter.post('/create', (req, res) => {
-	if (!req.session.userId || !req.session.accessToken) {
-		res.status(400).json({ error: 'Log in required' })
+queueRouter.post('/create', async (req, res) => {
+	const { api } = await getSpotify(req)
+	if (!api) {
+		res.status(401).json({ msg: 'moro, kirjaudu sisää' })
 		return
 	}
 
 	try {
-		const queue = createQueue(req.session.userId)
+		const queue = createQueue(api)
 		res.status(201).json(queue)
 		return
 	} catch (error) {
@@ -23,12 +28,12 @@ queueRouter.post('/create', (req, res) => {
 })
 
 queueRouter.post('/:id/set-user-queue', async (req, res) => {
-	if (!req.session.userId || !req.session.accessToken) {
-		res.status(400).json({ error: 'Log in required' })
+	const { api, profile } = await getSpotify(req)
+	if (!api || !profile) {
+		res.status(401).json({ msg: 'moro, kirjaudu sisää' })
 		return
 	}
 
-	const { accessToken, userId } = req.session
 	const { id: queueId } = req.params
 	const { trackIds } = req.body
 
@@ -41,7 +46,8 @@ queueRouter.post('/:id/set-user-queue', async (req, res) => {
 	}
 
 	try {
-		const tracks = await fetchTracks(trackIds, accessToken)
+		const userId = profile.id
+		const tracks = await api.tracks.get(trackIds)
 		const updatedQueue = setUserQueue(
 			queueId,
 			userId,
@@ -71,7 +77,7 @@ queueRouter.post('/:id/set-user-queue', async (req, res) => {
 
 queueRouter.get('/:id', (req, res) => {
 	const { id: queueId } = req.params
-	const queue = getQueue(queueId)
+	const queue = queueStore.get(queueId)
 
 	if (!queue) {
 		res.status(404).json({ error: 'Queue not found' })

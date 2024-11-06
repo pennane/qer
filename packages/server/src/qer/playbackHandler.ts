@@ -1,6 +1,8 @@
-import { buildTrackQueue, popFirstUserTrack } from './queue'
-import { fetchCurrentTrack, playTrack } from './spotify'
-import { getQueue, getUser, queueStore } from '../stores'
+import config from '../lib/config'
+import { buildTrackQueue, popFirstUserTrack, queueStore } from './queue'
+
+import { AccessToken, SpotifyApi } from '@spotify/web-api-ts-sdk'
+import { apiStore } from './spotify'
 
 const INTERVAL_DURATION = 10000
 const QUEUE_NEXT_TRESHOLD = 10000
@@ -15,14 +17,22 @@ function createProcess(id: string) {
 		try {
 			if (timeoutStore.has(id)) return
 
-			const queue = getQueue(id)
-			const user = getUser(id)
-			if (!queue || !user) {
-				console.log(`(${id}) No queue or user found`)
+			const queue = queueStore.get(id)
+			if (!queue) {
+				console.log(`(${id}) No queue found`)
+				cleanUpProcess(id)
+				return
+			}
+
+			const api = apiStore.get(id)
+
+			if (!api) {
+				console.log(`(${id}) Failed to get sdk`)
 				return
 			}
 
 			const trackQueue = buildTrackQueue(queue.users)
+
 			if (!trackQueue.length) {
 				console.log(`(${id}) Track queue is empty. Cleaning up process`)
 				cleanUpProcess(id)
@@ -31,41 +41,46 @@ function createProcess(id: string) {
 
 			const nextTrack = trackQueue[0]!
 
-			const currentTrack = await fetchCurrentTrack(user.accessToken)
+			const currentTrack = await api.player.getCurrentlyPlayingTrack()
+
 			if (!currentTrack) {
 				console.log(
-					`(${id}) Failed to fetch current track (requested by ${nextTrack.userDisplayName})`,
+					`(${id}) Failed to fetch current track (requested by ${nextTrack.userId})`,
 				)
 				return
 			}
-			if (!currentTrack.isPlaying) {
+			if (!currentTrack.is_playing) {
 				console.log(`(${id}) Nothing playing currently`)
 				return
 			}
 
 			const timeToNext = Math.max(
-				currentTrack.durationMs -
-					currentTrack.progressMs -
+				currentTrack.item.duration_ms -
+					currentTrack.progress_ms -
 					SKIP_TO_NEXT_MS,
 				0,
 			)
 
 			if (timeToNext > QUEUE_NEXT_TRESHOLD) {
 				console.log(
-					`(${id}) Time to next track (${nextTrack.name}): ${timeToNext} ms (requested by ${nextTrack.userDisplayName})`,
+					`(${id}) Time to next track (${nextTrack.name}): ${timeToNext} ms (requested by ${nextTrack.userId})`,
 				)
 				return
 			}
 
 			console.log(
-				`(${id}) Scheduling next track (${nextTrack.name}) in ${timeToNext} ms (requested by ${nextTrack.userDisplayName})`,
+				`(${id}) Scheduling next track (${nextTrack.name}) in ${timeToNext} ms (requested by ${nextTrack.userId})`,
 			)
 			const timeout = setTimeout(async () => {
 				try {
 					popFirstUserTrack(queue.userId, nextTrack.userId)
-					await playTrack(user.accessToken, nextTrack.uri)
+					await api.player.startResumePlayback(
+						undefined as unknown as string,
+						undefined,
+						[nextTrack.uri],
+					)
 					console.log(
-						`(${id}) Playing next track (${nextTrack.name}) (requested by ${nextTrack.userDisplayName})`,
+						`(${id}) Playing next track (${nextTrack.name}) (requested by ${nextTrack.userId})`,
 					)
 				} catch (error) {
 					console.error(

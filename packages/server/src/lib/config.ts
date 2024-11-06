@@ -17,9 +17,9 @@ function fromEntries<T extends string>(entries: [T, string][]) {
 const requiredVariables = [
 	'SPOTIFY_CLIENT_ID',
 	'SPOTIFY_SECRET',
-	'SPOTIFY_REDIRECT_URI',
 	'CORS_CLIENT_URL',
 	'SESSION_SECRET',
+	'COOKIE_SECRET',
 ] as const
 
 export default fromEntries(requiredVariables.map(requiredVariable))

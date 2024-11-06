@@ -1,8 +1,9 @@
 import express from 'express'
 import session from 'express-session'
 import cors from 'cors'
+
+import cookieParser from 'cookie-parser'
 import { startPlaybackHandling } from './qer/playbackHandler'
-import { fetchUserProfile } from './qer/spotify'
 import { authRouter } from './routes/auth'
 import queueRouter from './routes/queue'
 import config from './lib/config'
@@ -15,29 +16,24 @@ const corsOptions = {
 	optionsSuccessStatus: 204,
 }
 
-app.use(cors(corsOptions))
-app.use(express.json())
 app.use(
 	session({
 		secret: config.SESSION_SECRET,
+		saveUninitialized: false,
 		resave: false,
-		saveUninitialized: true,
-		cookie: { secure: false, maxAge: 60000 },
 	}),
 )
+app.use(cors(corsOptions))
+app.use(express.json())
+app.use(cookieParser())
 
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/queue', queueRouter)
 
-app.get('/', async (req, res) => {
-	if (!req.session.accessToken) {
-		res.send('moro, kirjaudu sisää')
-		return
-	}
-	const user = await fetchUserProfile(req.session.accessToken)
-	res.json(user)
+app.get('/', (req, res) => {
+	res.json({ msg: 'moro' })
 })
 
-app.listen(3000, () => console.log('Server running on port 3000'))
+app.listen(3000, () => console.info('Server running on port 3000'))
 
 startPlaybackHandling()
