@@ -17,8 +17,9 @@ queueRouter.post('/create', async (req, res) => {
 	}
 
 	try {
-		const queue = createQueue(api)
-		res.status(201).json(queue)
+		const queue = await createQueue(api)
+		const trackQueue = buildTrackQueue(queue.users)
+		res.status(200).json(trackQueue)
 		return
 	} catch (error) {
 		console.error('Error creating queue:', error)
@@ -36,6 +37,7 @@ queueRouter.post('/:id/set-user-queue', async (req, res) => {
 
 	const { id: queueId } = req.params
 	const { trackIds } = req.body
+	console.log(req.body)
 
 	if (
 		!Array.isArray(trackIds) ||
@@ -59,14 +61,9 @@ queueRouter.post('/:id/set-user-queue', async (req, res) => {
 				name: t.name,
 			})),
 		)
+		const queueTracks = buildTrackQueue(updatedQueue.users)
 
-		const setTracks = updatedQueue.users.find((u) => u.id === userId)?.queue
-		if (!setTracks) {
-			res.status(404).json({ error: 'User queue not found' })
-			return
-		}
-
-		res.status(200).json(setTracks)
+		res.status(200).json(queueTracks)
 		return
 	} catch (error) {
 		console.error('Error setting user queue:', error)

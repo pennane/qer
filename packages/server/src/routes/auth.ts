@@ -9,7 +9,7 @@ authRouter.post('/accept', async (req, res) => {
 		res.status(400).json({ error: 'bruh' })
 		return
 	}
-	res.send(200)
+	res.sendStatus(200)
 })
 
 authRouter.get('/me', async (req, res) => {

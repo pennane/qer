@@ -1,5 +1,11 @@
+import { QueuePage } from './views/QueuePage'
+
 function App() {
-  return <div>QER : D</div>
+  return (
+    <div>
+      <QueuePage />
+    </div>
+  )
 }
 
 export default App
