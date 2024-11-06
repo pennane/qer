@@ -1,7 +1,8 @@
 import { partition } from './lib'
 import { CurrentTrack, SpotifyTrack } from './models'
+import { addUser } from './stores'
 import { getTrack, addTrack } from './tracks'
-import { addUser } from './users'
+
 import dotenv from 'dotenv'
 
 dotenv.config()

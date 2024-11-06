@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { fetchTracks } from '../spotify'
-import { createQueue, setUserQueue, getQueue, buildTrackQueue } from '../queue'
+import { setUserQueue, buildTrackQueue } from '../queue'
+import { createQueue, getQueue } from '../stores'
 
 export const queueRouter = Router()
 

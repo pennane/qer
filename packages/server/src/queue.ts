@@ -7,7 +7,7 @@ import {
 	UserWithTracks,
 	Queue,
 } from './models'
-import { getUser } from './users'
+import { getUser, queueStore } from './stores'
 
 function hasTracksInQueue(x: QueueUser): x is UserWithTracks {
 	return isNotEmpty(x.queue)
@@ -70,36 +70,6 @@ export function buildTrackQueue(users: QueueUser[]): RequestedTrack[] {
 	return queue
 }
 
-export const queueStore = new Map<string, Queue>()
-
-export const popFirstUserTrack = (queueId: string, userId: string) => {
-	const queue = queueStore.get(queueId)
-	if (!queue) return
-	queue.users = queue.users.map((u) =>
-		u.id === userId ? { ...u, queue: u.queue.slice(1) } : u,
-	) as NonEmptyList<QueueUser>
-}
-
-export const deleteQueue = (userId: string): boolean => {
-	return queueStore.delete(userId)
-}
-
-export const createQueue = (userId: string): Queue => {
-	const user = getUser(userId)!
-	const queue: Queue = queueStore.get(userId) || {
-		userId,
-		users: [
-			{ ...user, accumulatedPlaytime: 0, queue: [], joined: Date.now() },
-		],
-	}
-	queueStore.set(user.id, queue)
-	return queue
-}
-
-export const getQueue = (userId: string): Queue | null => {
-	return queueStore.get(userId) || null
-}
-
 export const addUserToQueue = (queueUserId: string, userId: string) => {
 	const queue = queueStore.get(queueUserId)
 	const user = getUser(userId)
@@ -128,4 +98,15 @@ export const setUserQueue = (
 		u.id === userId ? { ...u, queue: tracks } : u,
 	) as NonEmptyList<QueueUser>
 	return queue
+}
+
+export const popFirstUserTrack = (queueId: string, userId: string): boolean => {
+	const queue = queueStore.get(queueId)
+	if (!queue) return false
+
+	const userIndex = queue.users.findIndex((u) => u.id === userId)
+	if (userIndex === -1) return false
+
+	queue.users[userIndex]!.queue = queue.users[userIndex]!.queue.slice(1)
+	return true
 }
