@@ -1,4 +1,4 @@
-import { isNotEmpty } from './lib'
+import { isNotEmpty } from '../lib/fp'
 import {
 	Track,
 	NonEmptyList,
@@ -6,8 +6,8 @@ import {
 	RequestedTrack,
 	UserWithTracks,
 	Queue,
-} from './models'
-import { getUser, queueStore } from './stores'
+} from '../models'
+import { getUser, queueStore } from '../stores'
 
 function hasTracksInQueue(x: QueueUser): x is UserWithTracks {
 	return isNotEmpty(x.queue)

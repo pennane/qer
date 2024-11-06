@@ -1,6 +1,6 @@
 import { buildTrackQueue, popFirstUserTrack } from './queue'
 import { fetchCurrentTrack, playTrack } from './spotify'
-import { getQueue, getUser, queueStore } from './stores'
+import { getQueue, getUser, queueStore } from '../stores'
 
 const INTERVAL_DURATION = 10000
 const QUEUE_NEXT_TRESHOLD = 10000

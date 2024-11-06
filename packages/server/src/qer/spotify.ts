@@ -1,7 +1,7 @@
-import { partition } from './lib'
-import { CurrentTrack, SpotifyTrack } from './models'
-import { addUser } from './stores'
-import { getTrack, addTrack } from './tracks'
+import { partition } from '../lib/fp'
+import { CurrentTrack, SpotifyTrack } from '../models'
+import { addUser } from '../stores'
+import { getTrack, addTrack } from '../tracks'
 
 import dotenv from 'dotenv'
 

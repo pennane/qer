@@ -5,7 +5,7 @@ import {
 	createAuthURL,
 	fetchToken,
 	refreshAccessToken,
-} from '../spotify'
+} from '../qer/spotify'
 
 export const authRouter = Router()
 

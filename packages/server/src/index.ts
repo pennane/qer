@@ -1,9 +1,9 @@
 import express from 'express'
 import session from 'express-session'
-import { startPlaybackHandling } from './playbackHandler'
+import { startPlaybackHandling } from './qer/playbackHandler'
+import { fetchUserProfile } from './qer/spotify'
 import { authRouter } from './routes/auth'
 import queueRouter from './routes/queue'
-import { fetchUserProfile } from './spotify'
 
 const app = express()
 
