@@ -71,20 +71,6 @@ export function buildTrackQueue(users: QueueUser[]): RequestedTrack[] {
 	return queue
 }
 
-export function addUserToQueue(queueUserId: string, userId: string) {
-	const queue = queueStore.get(queueUserId)
-	if (!queue) throw new Error('no queue')
-	if (queue.users.some((user) => user.id === userId))
-		throw new Error('Already in said queue')
-	queue.users = queue.users.concat({
-		id: userId,
-		accumulatedPlaytime: 0,
-		queue: [],
-		joined: Date.now(),
-	}) as NonEmptyList<QueueUser>
-	return queue
-}
-
 export function setUserQueue(
 	queueUserId: string,
 	userId: string,
@@ -92,9 +78,20 @@ export function setUserQueue(
 ) {
 	const queue = queueStore.get(queueUserId)
 	if (!queue) throw new Error('no queue')
-	queue.users = queue.users.map((u) =>
-		u.id === userId ? { ...u, queue: tracks } : u,
-	) as NonEmptyList<QueueUser>
+        
+    const userIndex = queue.users.findIndex(u => u.id === userId)
+
+    if (userIndex === -1) {
+        queue.users = queue.users.concat({
+            id: userId,
+		    accumulatedPlaytime: 0,
+		    queue: tracks,
+		    joined: Date.now(),
+        }) as NonEmptyList<QueueUser>
+    } else {
+        queue.users[userIndex]!.queue = tracks
+    }
+
 	return queue
 }
 
