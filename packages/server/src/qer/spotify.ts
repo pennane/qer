@@ -24,21 +24,13 @@ export async function getSpotify(
 	res?: Response,
 ): Promise<{ api?: SpotifyApi; profile?: UserProfile }> {
 	try {
-		console.log(1)
 		const token = getToken(req)
-		console.log(2, token)
 		if (!token) return {}
-		console.log(3)
 		const api = SpotifyApi.withAccessToken(config.SPOTIFY_CLIENT_ID, token)
-		console.log(4, api)
 		const accessToken = await api.getAccessToken()
-		console.log(5, accessToken)
 		if (!accessToken || !accessToken.access_token) return {}
-		console.log(6)
 		const profile = await api.currentUser.profile()
-		console.log(7, profile)
 		if (!profile) return {}
-		console.log(8)
 		apiStore.set(profile.id, api)
 		res?.cookie('token', JSON.stringify(accessToken), {
 			httpOnly: true,
@@ -48,7 +40,7 @@ export async function getSpotify(
 
 		return { api: api, profile }
 	} catch (e) {
-		console.log(e)
+		console.error(e)
 		return {}
 	}
 }
