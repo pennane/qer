@@ -43,15 +43,7 @@ const RenderEnsureLogin: FC<{
     return <LoadingSpinner />
   }
 
-  if (!hasId) {
-    return (
-      <Button disabled={loading} onClick={adminJoin}>
-        Join to create a queue
-      </Button>
-    )
-  }
-
-  if (hasData && !hasApi) {
+  if (hasId && hasData && !hasApi) {
     return (
       <Button disabled={loading} onClick={userJoin}>
         Join existing queue
