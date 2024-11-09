@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import styled from 'styled-components'
 import { LoadingText, ErrorText } from '../components/Misc'
@@ -61,7 +61,8 @@ const Wrapper = styled.div`
 
 export const QueuePage: FC = () => {
   const queryClient = useQueryClient()
-  const { id } = useParams<{ id: string }>()
+  const [searchParams] = useSearchParams()
+  const id = searchParams.get('id')
   const { api, profile } = useSpotifyAuth()
 
   const {

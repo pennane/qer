@@ -6,9 +6,9 @@ import {
 } from '@spotify/web-api-ts-sdk'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { fetchCreateQueue, fetchProfile } from '../api'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
-const TARGET_QUEUE_KEY = 'target-queue-id'
+export const TARGET_QUEUE_KEY = 'target-queue-id'
 
 const emptyAccessToken = {
   access_token: 'emptyAccessToken',
@@ -37,8 +37,10 @@ const SpotifyAuthContext = createContext<AuthContextType | undefined>(undefined)
 const performUserAuthorization = async (
   scopes: string[]
 ): Promise<{ error: string | null; api: SpotifyApi | null }> => {
-  const targetId = window.location.pathname.slice(1)
-  sessionStorage.setItem(TARGET_QUEUE_KEY, targetId)
+  const targetId = new URLSearchParams(window.location.search).get('id')
+  if (targetId) {
+    sessionStorage.setItem(TARGET_QUEUE_KEY, targetId)
+  }
 
   const spotifyApi = new SpotifyApi(
     new AuthorizationCodeWithPKCEStrategy(
@@ -71,6 +73,7 @@ const performUserAuthorization = async (
     ).then((res) => res.status)
     if (serverStatus !== 200)
       return { error: 'server not happy :((', api: null }
+    sessionStorage.removeItem(TARGET_QUEUE_KEY)
 
     return { api: spotifyApi, error: null }
   } catch (e) {
@@ -91,13 +94,9 @@ const ADMIN_SCOPES = USER_SCOPES.concat([
   'user-read-currently-playing'
 ])
 
-const storedTargetQueueId = sessionStorage.getItem(TARGET_QUEUE_KEY)
-
 export const SpotifyAuthProvider: FC<{ children: ReactNode }> = ({
   children
 }) => {
-  const { id } = useParams<{ id: string }>()
-
   const queryClient = useQueryClient()
   const [api, setApi] = useState<SpotifyApi | null>(null)
   const [error, setError] = useState<Error | null>(null)
@@ -130,12 +129,6 @@ export const SpotifyAuthProvider: FC<{ children: ReactNode }> = ({
         setApi(api)
         setError(error ? new Error(error) : null)
         setUserType('user')
-        if (api) {
-          sessionStorage.removeItem(TARGET_QUEUE_KEY)
-          if (storedTargetQueueId && id !== storedTargetQueueId) {
-            navigate(`/${storedTargetQueueId}`, { replace: true })
-          }
-        }
       })
       .finally(() => setLoading(false))
   }

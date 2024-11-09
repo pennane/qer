@@ -1,8 +1,8 @@
 import { FC, ReactNode } from 'react'
-import { useSpotifyAuth } from '../context/SpotifyAuthContext'
+import { TARGET_QUEUE_KEY, useSpotifyAuth } from '../context/SpotifyAuthContext'
 import { Button } from './Button'
 import { ErrorText } from './Misc'
-import { useParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { fetchQueue } from '../api'
 import styled from 'styled-components'
@@ -60,8 +60,13 @@ const RenderEnsureLogin: FC<{
   )
 }
 
+const storedTargetQueueId = sessionStorage.getItem(TARGET_QUEUE_KEY)
+
 export const EnsureLogin: FC<{ children: ReactNode }> = ({ children }) => {
-  const { id } = useParams<{ id: string }>()
+  const [searchParams] = useSearchParams()
+  const id = searchParams.get('id') || storedTargetQueueId
+
+  console.log(id, storedTargetQueueId)
 
   const { data, isLoading } = useQuery({
     queryKey: ['queue', id],
