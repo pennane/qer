@@ -36,16 +36,18 @@ export const TrackList: FC<TrackListProps> = ({
         return (
           <TrackItem key={track.id} onClick={() => onTrackClick(track)}>
             {image && <TrackImage src={image.url} alt={track.name} />}
-            <TrackName>{track.name}</TrackName>
-            <ArtistList>
-              {track.artists.map((artist, index) => (
-                <Artist key={artist.id}>
-                  {artist.name}
-                  {index < track.artists.length - 1 ? ',' : ''}
-                </Artist>
-              ))}
-            </ArtistList>
-            <Duration>{formatDuration(track.duration_ms)}</Duration>
+            <Info>
+              <TrackName>{track.name}</TrackName>
+              <ArtistList>
+                {track.artists.map((artist, index) => (
+                  <Artist key={artist.id}>
+                    {artist.name}
+                    {index < track.artists.length - 1 ? ',' : ''}
+                  </Artist>
+                ))}
+              </ArtistList>
+              <Duration>{formatDuration(track.duration_ms)}</Duration>
+            </Info>
           </TrackItem>
         )
       })}
@@ -66,11 +68,17 @@ const Wrapper = styled.div`
   gap: 0.5rem;
 `
 
+const Info = styled.div`
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+`
+
 const TrackItem = styled.div`
   padding: 0.25rem;
   border: 1px solid transparent;
   border-radius: 4px;
-  display: flex;
+  display: inline-flex;
   gap: 0.5rem;
   align-items: center;
   cursor: pointer;
