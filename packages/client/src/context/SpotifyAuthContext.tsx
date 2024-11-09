@@ -108,9 +108,8 @@ export const SpotifyAuthProvider: FC<{ children: ReactNode }> = ({
     useMutation({
       mutationFn: fetchCreateQueue,
       onSuccess: (data) => {
-        console.log(data)
-        queryClient.setQueryData(['queue', profile!.id], data)
-        navigate(`/${profile!.id}`, { replace: true })
+        queryClient.setQueryData(['queue', data.userId], data)
+        navigate(`/${data.userId}`, { replace: true })
       },
       onError: console.log,
       throwOnError: false
