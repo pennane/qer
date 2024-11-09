@@ -10,8 +10,8 @@ import { getSpotify } from '../qer/spotify'
 export const queueRouter = Router()
 
 queueRouter.post('/create', async (req, res) => {
-	const { api } = await getSpotify(req)
-	if (!api) {
+	const { api, profile } = await getSpotify(req)
+	if (!api || !profile) {
 		res.status(401).json({ msg: 'moro, kirjaudu sisää' })
 		return
 	}
@@ -19,7 +19,7 @@ queueRouter.post('/create', async (req, res) => {
 	try {
 		const queue = await createQueue(api)
 		const trackQueue = buildTrackQueue(queue.users)
-		res.status(200).json(trackQueue)
+		res.status(200).json({ userId: profile.id, tracks: trackQueue })
 		return
 	} catch (error) {
 		console.error('Error creating queue:', error)
@@ -37,7 +37,6 @@ queueRouter.post('/:id/set-user-queue', async (req, res) => {
 
 	const { id: queueId } = req.params
 	const { trackIds } = req.body
-	console.log(req.body)
 
 	if (
 		!Array.isArray(trackIds) ||
@@ -63,7 +62,7 @@ queueRouter.post('/:id/set-user-queue', async (req, res) => {
 		)
 		const queueTracks = buildTrackQueue(updatedQueue.users)
 
-		res.status(200).json(queueTracks)
+		res.status(200).json({ userId, tracks: queueTracks })
 		return
 	} catch (error) {
 		console.error('Error setting user queue:', error)
@@ -82,7 +81,7 @@ queueRouter.get('/:id', (req, res) => {
 	}
 
 	const trackQueue = buildTrackQueue(queue.users)
-	res.status(200).json(trackQueue)
+	res.status(200).json({ userId: queueId, tracks: trackQueue })
 })
 
 export default queueRouter

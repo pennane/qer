@@ -1,37 +1,61 @@
 import { FC, ReactNode } from 'react'
-import styled from 'styled-components'
 import { useSpotifyAuth } from '../context/SpotifyAuthContext'
 import { Button } from './Button'
 import { ErrorText, LoadingText } from './Misc'
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  padding: 2rem;
-  background-color: var(--main-bg);
-  color: var(--main-fg);
-`
+import { useParams } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { fetchQueue } from '../api'
 
 export const EnsureLogin: FC<{ children: ReactNode }> = ({ children }) => {
-  const { api, loading, joinAsQueueAdmin, joinAsQueueUser, error } =
-    useSpotifyAuth()
+  const { id } = useParams<{ id: string }>()
 
-  if (!api) {
+  const { data, isLoading } = useQuery({
+    queryKey: ['queue', id],
+    queryFn: () => fetchQueue(id!),
+    refetchInterval: 7000,
+    enabled: !!id,
+    throwOnError: false
+  })
+
+  const {
+    api,
+    loading,
+    joinAsQueueAdmin,
+    joinAsQueueUser,
+    error: authError
+  } = useSpotifyAuth()
+
+  if (authError) {
+    return <ErrorText>Auth failed: {authError.message}</ErrorText>
+  }
+
+  if (loading || isLoading) {
+    return <LoadingText>... loading :D</LoadingText>
+  }
+
+  if (!id) {
     return (
-      <Wrapper>
-        {error && <ErrorText>{error}</ErrorText>}
-        <Button disabled={loading} onClick={joinAsQueueUser}>
-          Join existing queue
-        </Button>
-        <Button disabled={loading} onClick={joinAsQueueAdmin}>
-          Join to create a queue
-        </Button>
-        {loading && <LoadingText>... loading :D</LoadingText>}
-      </Wrapper>
+      <Button disabled={loading} onClick={joinAsQueueAdmin}>
+        Join to create a queue
+      </Button>
     )
   }
 
-  return <>{children}</>
+  if (data && api) {
+    return <>{children}</>
+  }
+
+  if (data && !api) {
+    return (
+      <Button disabled={loading} onClick={joinAsQueueUser}>
+        Join existing queue
+      </Button>
+    )
+  }
+
+  return (
+    <Button disabled={loading} onClick={joinAsQueueAdmin}>
+      Join to create a queue
+    </Button>
+  )
 }

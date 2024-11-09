@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import styled from 'styled-components'
 import {
@@ -12,64 +12,12 @@ import {
   Duration
 } from '../components/Misc'
 import { useSpotifyAuth } from '../context/SpotifyAuthContext'
-import { SpotifyApi, Track } from '@spotify/web-api-ts-sdk'
-import { Button } from '../components/Button'
+import { Track } from '@spotify/web-api-ts-sdk'
 import { TrackList } from '../components/TrackList'
 import useTrackSearch from '../hooks/useTrackSearch'
 import { TrackSearch } from '../components/TrackSearchBar'
 import { UserProfile } from '../components/UserProfile'
-
-type QueueTrack = {
-  spotifyId: string
-  uri: string
-  duration_ms: number
-  name: string
-  artists: { name: string; id: string }[]
-  userId: string
-}
-
-const fetchQueue = async (id: string) => {
-  const response = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL}/queue/${id}`
-  )
-  if (!response.ok) throw new Error('failed to fetch queue')
-  return response.json() as Promise<QueueTrack[]>
-}
-
-const fetchCreateQueue = async () => {
-  const response = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL}/queue/create`,
-    { method: 'POST', credentials: 'include' }
-  )
-  if (!response.ok) throw new Error('failed to create queue')
-  return response.json() as Promise<QueueTrack[]>
-}
-
-const fetchSetTracks = async ({
-  queueId,
-  ids
-}: {
-  queueId: string
-  ids: string[]
-}) => {
-  const response = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL}/queue/${queueId}/set-user-queue`,
-    {
-      method: 'POST',
-      credentials: 'include',
-      body: JSON.stringify({ trackIds: ids }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-  )
-  if (!response.ok) throw new Error('failed to set queue tracks')
-  return response.json() as Promise<QueueTrack[]>
-}
-
-const fetchProfile = async (api: SpotifyApi) => {
-  return api.currentUser.profile()
-}
+import { fetchQueue, fetchSetTracks } from '../api'
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -80,29 +28,10 @@ const Wrapper = styled.div`
 export const QueuePage: FC = () => {
   const queryClient = useQueryClient()
   const { id } = useParams<{ id: string }>()
-  const { api, userType } = useSpotifyAuth()
-  const navigate = useNavigate()
-
-  const { data: profile } = useQuery({
-    queryKey: ['currentUser'],
-    queryFn: () => fetchProfile(api)
-  })
+  const { api, profile } = useSpotifyAuth()
 
   const {
-    mutateAsync: createQueueMutation,
-    status: createQueueMutationStatus
-  } = useMutation({
-    mutationFn: fetchCreateQueue,
-    onSuccess: (data) => {
-      console.log(123)
-      queryClient.setQueryData(['queue', profile!.id], data)
-      navigate(`/${profile!.id}`, { replace: true })
-    },
-    onError: console.log
-  })
-
-  const {
-    data: tracks,
+    data: queue,
     isLoading,
     error
   } = useQuery({
@@ -112,8 +41,10 @@ export const QueuePage: FC = () => {
     enabled: !!id
   })
 
+  const tracks = queue?.tracks
+
   const { query, setQuery, tracks: searchTracks } = useTrackSearch(api, '')
-  const [ownQueue, setOwnQueue] = useState(tracks || [])
+  const [ownQueue, setOwnQueue] = useState(queue?.tracks || [])
 
   useEffect(() => {
     if (!profile?.id) return
@@ -143,12 +74,6 @@ export const QueuePage: FC = () => {
     })
   }
 
-  const createQueue = () => {
-    if (userType !== 'admin') return
-    if (id) return
-    createQueueMutation([])
-  }
-
   const { mutateAsync: setQueueTracksMutation } = useMutation({
     mutationFn: fetchSetTracks,
     onSuccess: (data) => {
@@ -156,17 +81,6 @@ export const QueuePage: FC = () => {
     },
     onError: console.log
   })
-
-  if (!id && userType === 'admin') {
-    return (
-      <Button
-        disabled={createQueueMutationStatus !== 'idle'}
-        onClick={createQueue}
-      >
-        Create your own special queue
-      </Button>
-    )
-  }
 
   if (isLoading) return <LoadingText>Loading queue...</LoadingText>
   if (error) return <ErrorText>Failed to load queue</ErrorText>

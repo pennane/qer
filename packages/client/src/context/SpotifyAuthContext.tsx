@@ -1,8 +1,12 @@
 import { createContext, useContext, useState, ReactNode, FC } from 'react'
 import {
   AuthorizationCodeWithPKCEStrategy,
-  SpotifyApi
+  SpotifyApi,
+  UserProfile
 } from '@spotify/web-api-ts-sdk'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { fetchCreateQueue, fetchProfile } from '../api'
+import { useNavigate } from 'react-router-dom'
 
 const emptyAccessToken = {
   access_token: 'emptyAccessToken',
@@ -18,11 +22,12 @@ function isEmptyAccessToken(value: unknown): boolean {
 
 type AuthContextType = {
   userType: 'user' | 'admin'
+  profile: UserProfile
   joinAsQueueUser: () => Promise<void>
   joinAsQueueAdmin: () => Promise<void>
   api: SpotifyApi
   loading: boolean
-  error: string | null
+  error: Error
 }
 
 const SpotifyAuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -50,19 +55,24 @@ const performUserAuthorization = async (
     console.log(accessToken)
     return { error: 'invalid access token :((', api: null }
   }
-  const serverStatus = await fetch(
-    import.meta.env.VITE_SPOTIFY_ACCEPT_TOKEN_URI,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(accessToken),
-      credentials: 'include'
-    }
-  ).then((res) => res.status)
+  try {
+    const serverStatus = await fetch(
+      import.meta.env.VITE_SPOTIFY_ACCEPT_TOKEN_URI,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(accessToken),
+        credentials: 'include'
+      }
+    ).then((res) => res.status)
+    if (serverStatus !== 200)
+      return { error: 'server not happy :((', api: null }
 
-  if (serverStatus !== 200) return { error: 'server not happy :((', api: null }
-
-  return { api: spotifyApi, error: null }
+    return { api: spotifyApi, error: null }
+  } catch (e) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return { api: null, error: ((e as any) || {}).message }
+  }
 }
 
 const USER_SCOPES = [
@@ -80,32 +90,56 @@ const ADMIN_SCOPES = USER_SCOPES.concat([
 export const SpotifyAuthProvider: FC<{ children: ReactNode }> = ({
   children
 }) => {
+  const queryClient = useQueryClient()
   const [api, setApi] = useState<SpotifyApi | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<Error | null>(null)
   const [userType, setUserType] = useState<'user' | 'admin'>('user')
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
+
+  const { data: profile, error: profileError } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => fetchProfile(api!),
+    enabled: !!api,
+    throwOnError: false
+  })
+
+  const { mutateAsync: createQueueMutation, error: createQueueError } =
+    useMutation({
+      mutationFn: fetchCreateQueue,
+      onSuccess: (data) => {
+        console.log(data)
+        queryClient.setQueryData(['queue', profile!.id], data)
+        navigate(`/${profile!.id}`, { replace: true })
+      },
+      onError: console.log,
+      throwOnError: false
+    })
 
   const joinAsQueueUser = async () => {
-    if (api) return
     setLoading(true)
     await performUserAuthorization(USER_SCOPES)
       .then(({ api, error }) => {
         setApi(api)
-        setError(error)
+        setError(error ? new Error(error) : null)
         setUserType('user')
       })
       .finally(() => setLoading(false))
   }
 
   const joinAsQueueAdmin = async () => {
-    if (api) return
     await performUserAuthorization(ADMIN_SCOPES)
       .then(({ api, error }) => {
         setApi(api)
-        setError(error)
+        setError(error ? new Error(error) : null)
         setUserType('admin')
       })
-      .finally(() => setLoading(false))
+      .then(() => createQueueMutation([]))
+      .then((queue) => {
+        setLoading(false)
+        navigate(`/${queue.userId}`)
+      })
+      .catch(() => setLoading(false))
   }
 
   return (
@@ -114,8 +148,9 @@ export const SpotifyAuthProvider: FC<{ children: ReactNode }> = ({
         userType,
         joinAsQueueUser,
         joinAsQueueAdmin,
-        api: api as SpotifyApi,
-        error,
+        profile: profile!,
+        api: api!,
+        error: error || profileError || createQueueError,
         loading
       }}
     >
