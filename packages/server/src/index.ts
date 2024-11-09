@@ -34,6 +34,8 @@ app.get('/', (req, res) => {
 	res.json({ msg: 'moro' })
 })
 
-app.listen(config.PORT, () => console.info('Server running on port 3000'))
+app.listen(config.PORT, () =>
+	console.info('Server running on port ' + config.PORT),
+)
 
 startPlaybackHandling()
