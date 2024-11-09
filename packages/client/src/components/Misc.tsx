@@ -21,7 +21,11 @@ export const ArtistList = styled.span`
   font-weight: 300;
 `
 
-export const Artist = styled.span``
+export const Artist = styled.span`
+  font-size: 0.9rem;
+  font-weight: 300;
+  margin-right: 0.25rem;
+`
 
 export const Duration = styled.span`
   margin: 0;

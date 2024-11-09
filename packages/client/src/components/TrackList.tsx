@@ -2,7 +2,7 @@ import { Track } from '@spotify/web-api-ts-sdk'
 import { FC } from 'react'
 import styled from 'styled-components'
 import { LoadingSpinner } from './LoadingSpinner'
-import { Duration } from './Misc'
+import { Artist, ArtistList, Duration } from './Misc'
 import { formatDuration } from '../lib'
 
 interface TrackListProps {
@@ -83,12 +83,4 @@ const TrackName = styled.h3`
   margin: 0;
   font-size: 1rem;
   font-weight: 700;
-`
-
-const ArtistList = styled.div``
-
-const Artist = styled.span`
-  font-size: 0.9rem;
-  font-weight: 300;
-  margin-right: 0.5rem;
 `
