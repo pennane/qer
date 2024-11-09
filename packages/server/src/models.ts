@@ -15,13 +15,13 @@ export type Track = {
 	duration_ms: number
 	name: string
 	artists: { name: string; id: string }[]
+	added: number
 }
 
 export type QueueUser = {
 	id: string
 	queue: Track[]
 	accumulatedPlaytime: number
-	joined: number
 }
 
 export type Queue = {

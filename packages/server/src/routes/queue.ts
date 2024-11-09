@@ -61,6 +61,7 @@ queueRouter.post('/:id/set-user-queue', async (req, res) => {
 	try {
 		const userId = profile.id
 		const tracks = await api.tracks.get(trackIds)
+		const now = Date.now()
 		const updatedQueue = setUserQueue(
 			queueId,
 			userId,
@@ -70,6 +71,7 @@ queueRouter.post('/:id/set-user-queue', async (req, res) => {
 				uri: t.uri,
 				artists: t.artists,
 				name: t.name,
+				added: now,
 			})),
 		)
 		const queueTracks = buildTrackQueue(updatedQueue.users)

@@ -21,7 +21,9 @@ function nextUser(
 	const [next, ...rest] = users.toSorted((a, b) => {
 		const timeDelta = a.accumulatedPlaytime - b.accumulatedPlaytime
 		if (timeDelta !== 0) return timeDelta
-		return a.joined - b.joined
+		if (!a.queue.length) return 1
+		if (!b.queue.length) return -1
+		return a.queue[0]!.added - b.queue[0]!.added
 	})
 	return [next!, rest]
 }
@@ -78,19 +80,18 @@ export function setUserQueue(
 ) {
 	const queue = queueStore.get(queueUserId)
 	if (!queue) throw new Error('no queue')
-        
-    const userIndex = queue.users.findIndex(u => u.id === userId)
 
-    if (userIndex === -1) {
-        queue.users = queue.users.concat({
-            id: userId,
-		    accumulatedPlaytime: 0,
-		    queue: tracks,
-		    joined: Date.now(),
-        }) as NonEmptyList<QueueUser>
-    } else {
-        queue.users[userIndex]!.queue = tracks
-    }
+	const userIndex = queue.users.findIndex((u) => u.id === userId)
+
+	if (userIndex === -1) {
+		queue.users = queue.users.concat({
+			id: userId,
+			accumulatedPlaytime: 0,
+			queue: tracks,
+		}) as NonEmptyList<QueueUser>
+	} else {
+		queue.users[userIndex]!.queue = tracks
+	}
 
 	return queue
 }
@@ -119,7 +120,6 @@ export async function createQueue(sdk: SpotifyApi): Promise<Queue> {
 				id: profile.id,
 				accumulatedPlaytime: 0,
 				queue: [],
-				joined: Date.now(),
 			},
 		],
 	}

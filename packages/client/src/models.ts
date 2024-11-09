@@ -5,6 +5,7 @@ export type QueueTrack = {
   name: string
   artists: { name: string; id: string }[]
   userId: string
+  added: number
 }
 
 export type Queue = {
