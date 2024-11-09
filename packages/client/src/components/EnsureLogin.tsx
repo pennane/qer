@@ -66,8 +66,6 @@ export const EnsureLogin: FC<{ children: ReactNode }> = ({ children }) => {
   const [searchParams] = useSearchParams()
   const id = searchParams.get('id') || storedTargetQueueId
 
-  console.log(id, storedTargetQueueId)
-
   const { data, isLoading } = useQuery({
     queryKey: ['queue', id],
     queryFn: () => fetchQueue(id!),

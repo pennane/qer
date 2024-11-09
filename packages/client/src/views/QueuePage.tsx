@@ -119,7 +119,7 @@ export const QueuePage: FC = () => {
     onSuccess: (data) => {
       queryClient.setQueryData(['queue', id], data)
     },
-    onError: console.log
+    onError: console.error
   })
 
   const { mutateAsync: deleteOwnQueue } = useMutation({
@@ -129,7 +129,7 @@ export const QueuePage: FC = () => {
         queryClient.setQueryData(['queue', id], null)
       }
     },
-    onError: console.log
+    onError: console.error
   })
 
   const handleDelete = async () => {
