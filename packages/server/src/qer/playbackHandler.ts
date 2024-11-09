@@ -99,7 +99,7 @@ function createProcess(id: string) {
 	intervalStore.set(id, interval)
 }
 
-function cleanUpProcess(id: string) {
+export function cleanUpProcess(id: string) {
 	const queue = queueStore.get(id)
 	if (queue) {
 		queue.users = queue.users.map((user) => ({

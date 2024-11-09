@@ -6,6 +6,7 @@ import {
 	queueStore,
 } from '../qer/queue'
 import { getSpotify } from '../qer/spotify'
+import { cleanUpProcess } from '../qer/playbackHandler'
 
 export const queueRouter = Router()
 
@@ -26,6 +27,17 @@ queueRouter.post('/create', async (req, res) => {
 		res.status(500).json({ error: 'Failed to create queue' })
 		return
 	}
+})
+
+queueRouter.post('/delete', async (req, res) => {
+	const { api, profile } = await getSpotify(req)
+	if (!api || !profile) {
+		res.status(401).json({ msg: 'moro, kirjaudu sisää' })
+		return
+	}
+	const deleted = queueStore.delete(profile.id)
+	cleanUpProcess(profile.id)
+	res.json({ deleted })
 })
 
 queueRouter.post('/:id/set-user-queue', async (req, res) => {
