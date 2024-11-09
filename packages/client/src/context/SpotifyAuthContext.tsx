@@ -52,7 +52,6 @@ const performUserAuthorization = async (
     isEmptyAccessToken(accessToken) ||
     accessToken.expires! < Date.now()
   ) {
-    console.log(accessToken)
     return { error: 'invalid access token :((', api: null }
   }
   try {
