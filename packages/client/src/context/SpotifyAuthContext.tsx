@@ -38,7 +38,7 @@ const performUserAuthorization = async (
   scopes: string[]
 ): Promise<{ error: string | null; api: SpotifyApi | null }> => {
   const targetId = window.location.pathname.slice(1)
-  localStorage.setItem(TARGET_QUEUE_KEY, targetId)
+  sessionStorage.setItem(TARGET_QUEUE_KEY, targetId)
 
   const spotifyApi = new SpotifyApi(
     new AuthorizationCodeWithPKCEStrategy(
