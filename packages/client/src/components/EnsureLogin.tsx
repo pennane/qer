@@ -12,7 +12,7 @@ export const EnsureLogin: FC<{ children: ReactNode }> = ({ children }) => {
   const { data, isLoading } = useQuery({
     queryKey: ['queue', id],
     queryFn: () => fetchQueue(id!),
-    refetchInterval: 7000,
+    retry: false,
     enabled: !!id,
     throwOnError: false
   })

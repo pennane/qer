@@ -13,7 +13,7 @@ export const TrackSearch: FC<{
   return (
     <SearchInput
       type="text"
-      placeholder="Search for music from Spotify"
+      placeholder="Search songs from Spotify"
       value={query}
       onChange={handleSearch}
     />

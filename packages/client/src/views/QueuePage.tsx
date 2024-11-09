@@ -22,6 +22,8 @@ const Content = styled.div`
   max-width: 800px;
   width: 100%;
   margin: 1rem;
+  padding: 1rem;
+  background-color: var(--main-bg);
 `
 
 const StyledHeading = styled.h1`

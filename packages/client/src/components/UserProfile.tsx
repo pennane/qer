@@ -37,9 +37,10 @@ const Thumbnail = styled.img`
   height: 1.5rem;
   border-radius: 50%;
 `
-
 const DisplayName = styled.span`
   white-space: nowrap;
   font-weight: bold;
   font-size: 0.9em;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `

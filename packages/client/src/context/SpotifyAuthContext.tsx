@@ -52,7 +52,7 @@ const performUserAuthorization = async (
     isEmptyAccessToken(accessToken) ||
     accessToken.expires! < Date.now()
   ) {
-    return { error: 'invalid access token :((', api: null }
+    return { error: null, api: null }
   }
   try {
     const serverStatus = await fetch(
