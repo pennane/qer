@@ -20,6 +20,7 @@ const requiredVariables = [
 	'CORS_CLIENT_URL',
 	'SESSION_SECRET',
 	'COOKIE_SECRET',
+	'PORT',
 ] as const
 
 export default fromEntries(requiredVariables.map(requiredVariable))
