@@ -30,5 +30,6 @@ export const Artist = styled.span`
 export const Duration = styled.span`
   margin: 0;
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 200;
+  text-rendering: optimizelegibility;
 `

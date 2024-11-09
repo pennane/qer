@@ -68,11 +68,7 @@ const Wrapper = styled.div`
   gap: 0.5rem;
 `
 
-const Info = styled.div`
-  display: inline-flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-`
+const Info = styled.div``
 
 const TrackItem = styled.div`
   padding: 0.25rem;
