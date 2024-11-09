@@ -6,7 +6,9 @@ import {
 } from '@spotify/web-api-ts-sdk'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { fetchCreateQueue, fetchProfile } from '../api'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+
+const TARGET_QUEUE_KEY = 'target-queue-id'
 
 const emptyAccessToken = {
   access_token: 'emptyAccessToken',
@@ -35,6 +37,9 @@ const SpotifyAuthContext = createContext<AuthContextType | undefined>(undefined)
 const performUserAuthorization = async (
   scopes: string[]
 ): Promise<{ error: string | null; api: SpotifyApi | null }> => {
+  const targetId = window.location.pathname.slice(1)
+  localStorage.setItem(TARGET_QUEUE_KEY, targetId)
+
   const spotifyApi = new SpotifyApi(
     new AuthorizationCodeWithPKCEStrategy(
       import.meta.env.VITE_SPOTIFY_CLIENT_ID,
@@ -86,9 +91,13 @@ const ADMIN_SCOPES = USER_SCOPES.concat([
   'user-read-currently-playing'
 ])
 
+const storedTargetQueueId = sessionStorage.getItem(TARGET_QUEUE_KEY)
+
 export const SpotifyAuthProvider: FC<{ children: ReactNode }> = ({
   children
 }) => {
+  const { id } = useParams<{ id: string }>()
+
   const queryClient = useQueryClient()
   const [api, setApi] = useState<SpotifyApi | null>(null)
   const [error, setError] = useState<Error | null>(null)
@@ -121,6 +130,12 @@ export const SpotifyAuthProvider: FC<{ children: ReactNode }> = ({
         setApi(api)
         setError(error ? new Error(error) : null)
         setUserType('user')
+        if (api) {
+          sessionStorage.removeItem(TARGET_QUEUE_KEY)
+          if (storedTargetQueueId && id !== storedTargetQueueId) {
+            navigate(`/${storedTargetQueueId}`, { replace: true })
+          }
+        }
       })
       .finally(() => setLoading(false))
   }
@@ -135,7 +150,7 @@ export const SpotifyAuthProvider: FC<{ children: ReactNode }> = ({
       .then(() => createQueueMutation([]))
       .then((queue) => {
         setLoading(false)
-        navigate(`/${queue.userId}`)
+        navigate(`/${queue.userId}`, { replace: true })
       })
       .catch(() => setLoading(false))
   }
