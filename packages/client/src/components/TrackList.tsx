@@ -65,7 +65,6 @@ const TrackImage = styled.img`
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
 `
 
 const Info = styled.div``
