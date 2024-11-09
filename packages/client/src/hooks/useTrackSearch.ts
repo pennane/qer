@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useState, useEffect } from 'react'
 
 const fetchTracks = async (api: SpotifyApi, query: string) => {
-  const response = await api.search(query, ['track'], undefined, 6)
+  const response = await api.search(query, ['track'], undefined, 5)
   return response.tracks.items
 }
 
