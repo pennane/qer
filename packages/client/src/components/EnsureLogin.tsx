@@ -63,8 +63,15 @@ const RenderEnsureLogin: FC<{
 const storedTargetQueueId = sessionStorage.getItem(TARGET_QUEUE_KEY)
 
 export const EnsureLogin: FC<{ children: ReactNode }> = ({ children }) => {
-  const [searchParams] = useSearchParams()
-  const id = searchParams.get('id') || storedTargetQueueId
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  let id = searchParams.get('id')
+  if (storedTargetQueueId && id !== storedTargetQueueId) {
+    const newParams = new URLSearchParams(searchParams)
+    newParams.set('id', storedTargetQueueId)
+    setSearchParams(newParams, { replace: true })
+    id = storedTargetQueueId
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ['queue', id],
