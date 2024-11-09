@@ -10,33 +10,21 @@ export const ErrorText = styled.p`
   color: red;
 `
 
-export const TrackItem = styled.div`
-  margin-bottom: 1rem;
-  padding: 1rem;
-  border: 1px solid var(--main-fg);
-  border-radius: 4px;
-  display: flex;
-  align-items: baseline;
-  gap: 1rem;
-  flex-wrap: wrap;
-`
-
 export const TrackName = styled.h3`
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  font-weight: 500;
 `
 
-export const ArtistList = styled.div`
+export const ArtistList = styled.span`
   font-size: 0.9rem;
-  color: #cbd3db;
+  font-weight: 300;
 `
 
-export const Artist = styled.span`
-  margin-right: 0.5rem;
-`
+export const Artist = styled.span``
 
-export const Duration = styled.p`
+export const Duration = styled.span`
   margin: 0;
   font-size: 0.9rem;
-  color: #cbd3db;
+  font-weight: 600;
 `

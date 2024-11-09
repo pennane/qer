@@ -9,6 +9,15 @@ export const fetchQueue = async (id: string) => {
   return response.json() as Promise<Queue>
 }
 
+export const fetchDeleteQueue = async () => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_BASE_URL}/queue/delete`,
+    { method: 'POST', credentials: 'include' }
+  )
+  if (!response.ok) throw new Error('failed to delete own queue')
+  return response.json() as Promise<{ deleted: boolean }>
+}
+
 export const fetchCreateQueue = async () => {
   const response = await fetch(
     `${import.meta.env.VITE_API_BASE_URL}/queue/create`,

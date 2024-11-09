@@ -13,7 +13,7 @@ export const TrackSearch: FC<{
   return (
     <SearchInput
       type="text"
-      placeholder="Search for a track"
+      placeholder="Search for music from Spotify"
       value={query}
       onChange={handleSearch}
     />
@@ -22,11 +22,15 @@ export const TrackSearch: FC<{
 
 const SearchInput = styled.input`
   padding: 0.8rem;
+  margin: 0;
   font-size: 1rem;
-  width: 100%;
-  border: 1px solid var(--main-fg);
+
+  border: 1px solid var(--accent);
   border-radius: 4px;
-  margin-bottom: 1rem;
+
   background-color: var(--main-bg);
   color: var(--main-fg);
+  &::placeholder {
+    color: var(--faded-accent);
+  }
 `

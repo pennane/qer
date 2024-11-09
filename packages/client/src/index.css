@@ -1,3 +1,6 @@
+* {
+  box-sizing: border-box;
+}
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -7,7 +10,16 @@
 
   --main-bg: #000e1e;
   --main-fg: #e6ecf3;
+  --accent: #3392ff;
+  --faded-accent: hsl(212, 50%, 60%);
   --error: red;
+
+  --info: var(--accent);
+  --danger: var(--error);
+  --warning: #ffc107;
+  --success: #28a745;
+  --plain: var(--main-fg);
+
   color: var(--main-fg);
   background-color: var(--main-bg);
 

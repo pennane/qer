@@ -16,14 +16,18 @@ const useTrackSearch = (api: SpotifyApi, initialQuery = '') => {
     return () => clearTimeout(handler)
   }, [query])
 
-  const { data: tracks, error } = useQuery({
+  const {
+    data: tracks,
+    error,
+    isLoading
+  } = useQuery({
     queryKey: ['searchTracks', debouncedQuery],
     queryFn: () => fetchTracks(api, debouncedQuery),
     enabled: !!debouncedQuery,
     retry: false
   })
 
-  return { query, setQuery, tracks, error }
+  return { query, setQuery, tracks, error, loading: isLoading }
 }
 
 export default useTrackSearch
