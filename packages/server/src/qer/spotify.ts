@@ -48,6 +48,7 @@ export async function getSpotify(
 
 		return { api: api, profile }
 	} catch (e) {
+		console.log(e)
 		return {}
 	}
 }
