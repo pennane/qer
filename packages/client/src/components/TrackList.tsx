@@ -38,8 +38,11 @@ export const TrackList: FC<TrackListProps> = ({
             {image && <TrackImage src={image.url} alt={track.name} />}
             <TrackName>{track.name}</TrackName>
             <ArtistList>
-              {track.artists.map((artist) => (
-                <Artist key={artist.name}>{artist.name}</Artist>
+              {track.artists.map((artist, index) => (
+                <Artist key={artist.id}>
+                  {artist.name}
+                  {index < track.artists.length - 1 ? ',' : ''}
+                </Artist>
               ))}
             </ArtistList>
             <Duration>{formatDuration(track.duration_ms)}</Duration>
@@ -87,4 +90,5 @@ const ArtistList = styled.div``
 const Artist = styled.span`
   font-size: 0.9rem;
   font-weight: 300;
+  margin-right: 0.5rem;
 `

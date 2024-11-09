@@ -54,8 +54,11 @@ export const TrackItem: FC<{
         <div>
           {i + 1}.<TrackName>{track.name}</TrackName>-
           <ArtistList>
-            {track.artists.map((artist) => (
-              <Artist key={artist.id}>{artist.name}</Artist>
+            {track.artists.map((artist, index) => (
+              <Artist key={artist.id}>
+                {artist.name}
+                {index < track.artists.length - 1 ? ',' : ''}
+              </Artist>
             ))}
           </ArtistList>
           <Duration>{formatDuration(track.duration_ms)}</Duration>
