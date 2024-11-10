@@ -53,24 +53,24 @@ function nextTrack(
 	]
 }
 
-export function buildTrackQueue(users: QueueUser[]): RequestedTrack[] {
-	const usersWithTracks = users.filter(hasTracksInQueue)
+export function buildTrackQueue(queue: Pick<Queue, 'users'>): RequestedTrack[] {
+	const usersWithTracks = queue.users.filter(hasTracksInQueue)
 
 	if (!isNotEmpty(usersWithTracks)) return []
 
-	const queue: RequestedTrack[] = []
+	const tracks: RequestedTrack[] = []
 	let us: NonEmptyList<UserWithTracks> = usersWithTracks
 
 	for (;;) {
 		const [next, usersWithMoreTracks] = nextTrack(us)
-		queue.push(next)
+		tracks.push(next)
 		if (!isNotEmpty(usersWithMoreTracks)) {
 			break
 		}
 		us = usersWithMoreTracks
 	}
 
-	return queue
+	return tracks
 }
 
 export function setUserQueue(

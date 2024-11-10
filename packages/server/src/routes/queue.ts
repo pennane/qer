@@ -19,8 +19,8 @@ queueRouter.post('/create', async (req, res) => {
 
 	try {
 		const queue = await createQueue(api)
-		const trackQueue = buildTrackQueue(queue.users)
-		res.status(200).json({ userId: profile.id, tracks: trackQueue })
+		const queueTracks = buildTrackQueue(queue)
+		res.status(200).json({ userId: profile.id, tracks: queueTracks })
 		return
 	} catch (error) {
 		console.error('Error creating queue:', error)
@@ -74,7 +74,7 @@ queueRouter.post('/:id/set-user-queue', async (req, res) => {
 				added: now,
 			})),
 		)
-		const queueTracks = buildTrackQueue(updatedQueue.users)
+		const queueTracks = buildTrackQueue(updatedQueue)
 
 		res.status(200).json({ userId, tracks: queueTracks })
 		return
@@ -94,8 +94,8 @@ queueRouter.get('/:id', (req, res) => {
 		return
 	}
 
-	const trackQueue = buildTrackQueue(queue.users)
-	res.status(200).json({ userId: queueId, tracks: trackQueue })
+	const queueTracks = buildTrackQueue(queue)
+	res.status(200).json({ userId: queueId, tracks: queueTracks })
 })
 
 export default queueRouter

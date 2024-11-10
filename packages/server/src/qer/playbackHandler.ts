@@ -31,15 +31,15 @@ function createProcess(id: string) {
 				return
 			}
 
-			const trackQueue = buildTrackQueue(queue.users)
+			const queueTracks = buildTrackQueue(queue)
 
-			if (!trackQueue.length) {
+			if (!queueTracks.length) {
 				console.log(`(${id}) Track queue is empty. Cleaning up process`)
 				cleanUpProcess(id)
 				return
 			}
 
-			const nextTrack = trackQueue[0]!
+			const nextTrack = queueTracks[0]!
 
 			const currentTrack = await api.player.getCurrentlyPlayingTrack()
 
@@ -127,10 +127,10 @@ export function startPlaybackHandling() {
 	setInterval(() => {
 		const now = Date.now()
 		queueStore.values().forEach((queue) => {
-			const trackQueue = buildTrackQueue(queue.users)
+			const queueTracks = buildTrackQueue(queue)
 			const interval = processStore.get(queue.userId)
 
-			if (!trackQueue.length) {
+			if (!queueTracks.length) {
 				cleanUpProcess(queue.userId)
 				return
 			}
