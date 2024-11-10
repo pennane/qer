@@ -5,6 +5,7 @@ import { NonEmptyList, QueueUser } from '../models'
 const INTERVAL_DURATION = 10000
 const QUEUE_NEXT_TRESHOLD = 10000
 const SKIP_TO_NEXT_MS = 1200
+const TIME_TO_KEEP_INACTIVE_QUEUE = 1000 * 60 * 60
 
 const intervalStore = new Map<string, NodeJS.Timeout>()
 const timeoutStore = new Map<string, NodeJS.Timeout>()
@@ -123,11 +124,17 @@ export function startPlaybackHandling() {
 	started = true
 
 	setInterval(() => {
+		const now = Date.now()
 		queueStore.values().forEach((queue) => {
 			const trackQueue = buildTrackQueue(queue.users)
 			const interval = intervalStore.get(queue.userId)
 
 			if (!trackQueue.length) {
+				cleanUpProcess(queue.userId)
+				return
+			}
+
+			if (now - queue.updatedAt > TIME_TO_KEEP_INACTIVE_QUEUE) {
 				cleanUpProcess(queue.userId)
 				return
 			}

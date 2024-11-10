@@ -30,7 +30,7 @@ app.use(cookieParser())
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/queue', queueRouter)
 
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
 	res.json({ msg: 'moro' })
 })
 

@@ -1,4 +1,3 @@
-import { AccessToken } from '@spotify/web-api-ts-sdk'
 import 'express-session'
 
 declare module 'express-session' {
@@ -26,6 +25,7 @@ export type QueueUser = {
 
 export type Queue = {
 	userId: string
+	updatedAt: number
 	users: NonEmptyList<QueueUser>
 }
 

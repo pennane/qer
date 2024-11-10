@@ -93,6 +93,8 @@ export function setUserQueue(
 		queue.users[userIndex]!.queue = tracks
 	}
 
+	queue.updatedAt = Date.now()
+
 	return queue
 }
 
@@ -114,6 +116,7 @@ export function popFirstUserTrack(
 	if (!skiptimeaddition) {
 		targetUser.accumulatedPlaytime += toPop.duration_ms
 	}
+	queue.updatedAt = Date.now()
 	return true
 }
 
@@ -121,6 +124,7 @@ export async function createQueue(sdk: SpotifyApi): Promise<Queue> {
 	const profile = await sdk.currentUser.profile()
 	const queue: Queue = queueStore.get(profile.id) || {
 		userId: profile.id,
+		updatedAt: Date.now(),
 		users: [
 			{
 				id: profile.id,
