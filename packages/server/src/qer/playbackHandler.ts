@@ -110,6 +110,7 @@ export function cleanUpProcess(id: string) {
 			accumulatedPlaytime: 0,
 		})) as NonEmptyList<QueueUser>
 	}
+	apiStore.delete(id)
 	clearInterval(intervalStore.get(id))
 	clearTimeout(timeoutStore.get(id))
 	intervalStore.delete(id)
