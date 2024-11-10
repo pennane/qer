@@ -2,7 +2,7 @@ import { buildTrackQueue, popFirstUserTrack, queueStore } from './queue'
 import { apiStore } from './spotify'
 import { NonEmptyList, QueueUser } from '../models'
 
-const INTERVAL_DURATION = 10000
+const PROCESS_INSPECT_INTERVAL = 10000
 const QUEUE_NEXT_TRESHOLD = 10000
 const SKIP_TO_NEXT_MS = 1200
 const TIME_TO_KEEP_INACTIVE_QUEUE = 1000 * 60 * 60
@@ -97,7 +97,7 @@ function createProcess(id: string) {
 		} catch (error) {
 			console.error(`(${id}) Error processing playback:`, error)
 		}
-	}, INTERVAL_DURATION)
+	}, PROCESS_INSPECT_INTERVAL)
 
 	processStore.set(id, interval)
 }
@@ -150,5 +150,5 @@ export function startPlaybackHandling() {
 				cleanUpProcess(key)
 			}
 		})
-	}, INTERVAL_DURATION)
+	}, PROCESS_INSPECT_INTERVAL)
 }
