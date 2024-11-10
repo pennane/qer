@@ -96,7 +96,11 @@ export function setUserQueue(
 	return queue
 }
 
-export function popFirstUserTrack(queueId: string, userId: string) {
+export function popFirstUserTrack(
+	queueId: string,
+	userId: string,
+	skiptimeaddition?: boolean,
+) {
 	const queue = queueStore.get(queueId)
 	if (!queue) return false
 
@@ -107,7 +111,9 @@ export function popFirstUserTrack(queueId: string, userId: string) {
 	if (!toPop) return false
 
 	targetUser.queue = queue.users[userIndex]!.queue.slice(1)
-	targetUser.accumulatedPlaytime += toPop.duration_ms
+	if (!skiptimeaddition) {
+		targetUser.accumulatedPlaytime += toPop.duration_ms
+	}
 	return true
 }
 

@@ -26,6 +26,7 @@ function createProcess(id: string) {
 
 			if (!api) {
 				console.log(`(${id}) Failed to get sdk`)
+				cleanUpProcess(id)
 				return
 			}
 
@@ -42,6 +43,7 @@ function createProcess(id: string) {
 			const currentTrack = await api.player.getCurrentlyPlayingTrack()
 
 			if (!currentTrack) {
+				popFirstUserTrack(queue.userId, nextTrack.userId)
 				console.log(
 					`(${id}) Failed to fetch current track (requested by ${nextTrack.userId})`,
 				)
