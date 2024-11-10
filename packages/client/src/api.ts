@@ -1,7 +1,7 @@
 import { SpotifyApi } from '@spotify/web-api-ts-sdk'
 import { Queue } from './models'
 
-export const fetchQueue = async (id: string) => {
+export async function fetchQueue(id: string) {
   const response = await fetch(
     `${import.meta.env.VITE_API_BASE_URL}/queue/${id}`
   )
@@ -9,7 +9,7 @@ export const fetchQueue = async (id: string) => {
   return response.json() as Promise<Queue>
 }
 
-export const fetchDeleteQueue = async () => {
+export async function fetchDeleteQueue() {
   const response = await fetch(
     `${import.meta.env.VITE_API_BASE_URL}/queue/delete`,
     { method: 'POST', credentials: 'include' }
@@ -18,7 +18,7 @@ export const fetchDeleteQueue = async () => {
   return response.json() as Promise<{ deleted: boolean }>
 }
 
-export const fetchCreateQueue = async () => {
+export async function fetchCreateQueue() {
   const response = await fetch(
     `${import.meta.env.VITE_API_BASE_URL}/queue/create`,
     { method: 'POST', credentials: 'include' }
@@ -27,13 +27,13 @@ export const fetchCreateQueue = async () => {
   return response.json() as Promise<Queue>
 }
 
-export const fetchSetTracks = async ({
+export async function fetchSetTracks({
   queueId,
   ids
 }: {
   queueId: string
   ids: string[]
-}) => {
+}) {
   const response = await fetch(
     `${import.meta.env.VITE_API_BASE_URL}/queue/${queueId}/set-user-queue`,
     {
@@ -49,6 +49,6 @@ export const fetchSetTracks = async ({
   return response.json() as Promise<Queue>
 }
 
-export const fetchProfile = async (api: SpotifyApi) => {
+export async function fetchProfile(api: SpotifyApi) {
   return api.currentUser.profile()
 }
