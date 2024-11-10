@@ -7,14 +7,14 @@ const QUEUE_NEXT_TRESHOLD = 10000
 const SKIP_TO_NEXT_MS = 1200
 const TIME_TO_KEEP_INACTIVE_QUEUE = 1000 * 60 * 60
 
-const intervalStore = new Map<string, NodeJS.Timeout>()
-const timeoutStore = new Map<string, NodeJS.Timeout>()
+const processStore = new Map<string, NodeJS.Timeout>()
+const scheduleStore = new Map<string, NodeJS.Timeout>()
 
 function createProcess(id: string) {
 	console.log(`(${id}) Starting process`)
 	const interval = setInterval(async () => {
 		try {
-			if (timeoutStore.has(id)) return
+			if (scheduleStore.has(id)) return
 
 			const queue = queueStore.get(id)
 			if (!queue) {
@@ -89,17 +89,17 @@ function createProcess(id: string) {
 						error,
 					)
 				} finally {
-					timeoutStore.delete(id)
+					scheduleStore.delete(id)
 				}
 			}, timeToNext)
 
-			timeoutStore.set(id, timeout)
+			scheduleStore.set(id, timeout)
 		} catch (error) {
 			console.error(`(${id}) Error processing playback:`, error)
 		}
 	}, INTERVAL_DURATION)
 
-	intervalStore.set(id, interval)
+	processStore.set(id, interval)
 }
 
 export function cleanUpProcess(id: string) {
@@ -111,10 +111,10 @@ export function cleanUpProcess(id: string) {
 		})) as NonEmptyList<QueueUser>
 	}
 	apiStore.delete(id)
-	clearInterval(intervalStore.get(id))
-	clearTimeout(timeoutStore.get(id))
-	intervalStore.delete(id)
-	timeoutStore.delete(id)
+	clearInterval(processStore.get(id))
+	clearTimeout(scheduleStore.get(id))
+	processStore.delete(id)
+	scheduleStore.delete(id)
 	console.log(`(${id}) Cleaned up process`)
 }
 
@@ -128,7 +128,7 @@ export function startPlaybackHandling() {
 		const now = Date.now()
 		queueStore.values().forEach((queue) => {
 			const trackQueue = buildTrackQueue(queue.users)
-			const interval = intervalStore.get(queue.userId)
+			const interval = processStore.get(queue.userId)
 
 			if (!trackQueue.length) {
 				cleanUpProcess(queue.userId)
@@ -145,7 +145,7 @@ export function startPlaybackHandling() {
 			}
 		})
 
-		intervalStore.keys().forEach((key) => {
+		processStore.keys().forEach((key) => {
 			if (!queueStore.has(key)) {
 				cleanUpProcess(key)
 			}
