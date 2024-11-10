@@ -14,7 +14,8 @@ const Container = styled.div`
 const Item = styled.div`
   height: 100%;
   width: 20%;
-  border-left: 1px solid #ffffff0a;
+  border-left: 1px solid var(--main-fg);
+  opacity: 0.06;
 
   &:first-child {
     border-left: none;

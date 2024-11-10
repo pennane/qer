@@ -28,7 +28,7 @@ const Loader = styled.div`
 
   &::before {
     content: '';
-    border: 0.25rem solid white;
+    border: 0.25rem solid var(--main-fg);
     border-radius: 50%;
     width: 4.2rem;
     height: 4.2rem;
@@ -42,7 +42,7 @@ const Loader = styled.div`
 
   &::after {
     content: '';
-    border: 0.25rem solid white;
+    border: 0.25rem solid var(--main-fg);
     border-radius: 50%;
     width: 3.5rem;
     height: 3.5rem;

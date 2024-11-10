@@ -1,6 +1,7 @@
 * {
   box-sizing: border-box;
 }
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -8,17 +9,32 @@
 
   color-scheme: light dark;
 
-  --main-bg: #000e1e;
-  --main-fg: #e6ecf3;
-  --accent: #3392ff;
-  --faded-accent: hsl(212, 50%, 60%);
-  --error: red;
+  --main-bg-dark: #000e1e;
+  --main-fg-dark: #e6ecf3;
+  --accent-dark: #3392ff;
+  --faded-accent-dark: hsl(212, 50%, 60%);
+  --error-dark: red;
+  --warning-dark: #ffc107;
+  --success-dark: #28a745;
 
-  --info: var(--accent);
-  --danger: var(--error);
-  --warning: #ffc107;
-  --success: #28a745;
-  --plain: var(--main-fg);
+  --main-bg-light: #f0f8ff;
+  --main-fg-light: #0e141b;
+  --accent-light: #167eeb;
+  --faded-accent-light: #4474aa;
+  --error-light: #d32f2f;
+  --warning-light: #743600;
+  --success-light: #28a745;
+
+  --main-bg: light-dark(var(--main-bg-light), var(--main-bg-dark));
+  --main-fg: light-dark(var(--main-fg-light), var(--main-fg-dark));
+  --accent: light-dark(var(--accent-light), var(--accent-dark));
+  --faded-accent: light-dark(
+    var(--faded-accent-light),
+    var(--faded-accent-dark)
+  );
+  --error: light-dark(var(--error-light), var(--error-dark));
+  --warning: light-dark(var(--warning-light), var(--warning-dark));
+  --success: light-dark(var(--success-light), var(--success-dark));
 
   color: var(--main-fg);
   background-color: var(--main-bg);
@@ -27,13 +43,4 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
 }
