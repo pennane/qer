@@ -4,7 +4,7 @@ import { NonEmptyList, QueueUser } from '../models'
 
 const INTERVAL_DURATION = 10000
 const QUEUE_NEXT_TRESHOLD = 10000
-const SKIP_TO_NEXT_MS = 700
+const SKIP_TO_NEXT_MS = 1200
 
 const intervalStore = new Map<string, NodeJS.Timeout>()
 const timeoutStore = new Map<string, NodeJS.Timeout>()
