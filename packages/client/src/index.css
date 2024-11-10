@@ -16,6 +16,7 @@
   --error-dark: red;
   --warning-dark: #ffc107;
   --success-dark: #28a745;
+  --faded-dark: #8da4bf;
 
   --main-bg-light: #f0f8ff;
   --main-fg-light: #0e141b;
@@ -24,6 +25,7 @@
   --error-light: #d32f2f;
   --warning-light: #743600;
   --success-light: #28a745;
+  --faded-light: #5a6e85;
 
   --main-bg: light-dark(var(--main-bg-light), var(--main-bg-dark));
   --main-fg: light-dark(var(--main-fg-light), var(--main-fg-dark));
@@ -35,6 +37,7 @@
   --error: light-dark(var(--error-light), var(--error-dark));
   --warning: light-dark(var(--warning-light), var(--warning-dark));
   --success: light-dark(var(--success-light), var(--success-dark));
+  --faded: light-dark(var(--faded-light), var(--faded-dark));
 
   color: var(--main-fg);
   background-color: var(--main-bg);

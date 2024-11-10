@@ -59,6 +59,18 @@ const Wrapper = styled.div`
   gap: 1rem;
 `
 
+const Footer = styled.footer`
+  color: var(--faded);
+  background-color: var(--main-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 300;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+`
+
 export const QueuePage: FC = () => {
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams()
@@ -170,8 +182,16 @@ export const QueuePage: FC = () => {
 
           {profile && id === profile.id && (
             <Button color="warning" onClick={handleDelete}>
-              Delete queue from usage
+              Delete queue from use
             </Button>
+          )}
+
+          {profile && id === profile.id && (
+            <Footer>
+              <p>
+                ( queue is automatically deleted after one hour of inactivity )
+              </p>
+            </Footer>
           )}
         </Wrapper>
       </Content>
